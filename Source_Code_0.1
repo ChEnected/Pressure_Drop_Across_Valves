@@ -68,5 +68,18 @@ public class deltaPValve
 		}
 		
 		//Calculating the friction factor
+		{if (Reynolds < 3000000)
+			FrictionFactor = 0.0014+(0.125/ReynoldsNumberF);
+			System.out.println("The friction factor is %f.",FrictionFactor);
+		else 
+			System.out.println("The Reynolds number is out of range for the equations in the current library.");
+		}
+		
+		
+		
+		
+		
+		
+		
 	}
 }
