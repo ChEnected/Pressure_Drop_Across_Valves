@@ -1,0 +1,72 @@
+/*Pressure Drop Across A Valve Source Code
+This is the source code for calculating the pressure drop across a valve by interacting with the user.
+The program is to be written where an engineer can select the type of valve being dealt with, input the needed information, 
+and a theoretical pressure drop across that valve will be calculated. 
+
+The second part of this program will ask the engineer what the recorded pressure drop is,
+and will provide a %error. 
+*/
+
+//Importing Scanner Utility
+import java.util.Scanner;
+
+public class deltaPValve
+{
+	public static void main(String[] args)
+	{
+		//Variable List
+		double flowrate;
+		double diameter;
+		double velocity;
+		double viscosity;
+		double ReynoldsNumber;
+		double density;
+		
+		//Importing keyboard scanner
+		Scanner keyboard = new Scanner (System.in);
+		
+		//Greeting Statement 
+		System.out.println("\nThis program allows you to calculate a theoretical pressure drop across a valve.\n");
+		System.out.print("Currently, it can calculate a pressure drop across the following valves: \n 	Gate Valve \n 	Globe Valve \n 	Ball Valve \n 	Expansion Valve \n");
+		
+		//Display of required information
+		System.out.println("\nIn order to get started, you are going to need the following information:");
+		System.out.print("	The flowrate in GPM \n 	The density of the fluid in kg/m^3 \n 	The viscosity of the fluid in cP at the operating temperature \n 	The inner diameter of the pipe");
+		
+		//Request for User Data
+		System.out.println("\nEnter the flowrate in GPM: ");
+		flowrate = keyboard.nextDouble();
+		
+		System.out.println("Enter the inner diameter of the pipe in inches: ");
+		diameter = keyboard.nextDouble();
+		
+		System.out.println("Enter the fluid viscosity (in cP) at the operating temperature: ");
+		viscosity = keyboard.nextDouble();
+		
+		System.out.println("Enter the density of the fluid in kilograms per cubic meter: ");
+		density = keyboard.nextDouble();
+		
+		//Performing unit conversions from user input units to metric units 
+		double diameterSI = diameter*0.254;
+		double flowrateSI = flowrate*0.0378541/60;
+		double viscositySI = viscosity/1000;
+		
+		//Calculating the velocity inside of the pipe at the given flowrate and diameter
+		velocity= (4*flowrateSI)/(3.14*diameterSI*diameterSI);
+		System.out.printf("The velocity of water in a %.2f inch pipe at %.2f GPM is %.2f m/s",diameter,flowrate,velocity);
+		
+		//Calculating the Reynolds number 
+		ReynoldsNumber = (density*velocity*diameterSI)/viscositySI;
+		System.out.printf("\nThis gives a Reynolds number of %.2f.",ReynoldsNumber);
+		
+		//Deciding if the Reynolds Number is turbulent
+		{if (ReynoldsNumber > 10000)
+		
+			System.out.println("\nSince the Reynolds Number is above 10,000, the flow is turbulent");
+		else
+			System.out.println("\nThe flow is laminar. This is a suspect result and you should double check your input data.");
+		}
+		
+		//Calculating the friction factor
+	}
+}
