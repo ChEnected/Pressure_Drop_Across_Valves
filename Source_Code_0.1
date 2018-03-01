@@ -20,7 +20,18 @@ public class deltaPValve
 		double velocity;
 		double viscosity;
 		double ReynoldsNumber;
+		double ReynoldsNumberF;
 		double density;
+		double PressureDrop;
+		double FrictionFactor;
+		
+		double GateLoss;
+		double GVFL;
+		
+		
+		
+		String valve;
+		String GateOpening;
 		
 		//Importing keyboard scanner
 		Scanner keyboard = new Scanner (System.in);
@@ -28,58 +39,90 @@ public class deltaPValve
 		//Greeting Statement 
 		System.out.println("\nThis program allows you to calculate a theoretical pressure drop across a valve.\n");
 		System.out.print("Currently, it can calculate a pressure drop across the following valves: \n 	Gate Valve \n 	Globe Valve \n 	Ball Valve \n 	Expansion Valve \n");
+		System.out.println("What type of valve are we working with? ");
+		valve = keyboard.nextLine();
+
+
+		//Create switch statement that executes code depending on which valve is selected above 
 		
-		//Display of required information
-		System.out.println("\nIn order to get started, you are going to need the following information:");
-		System.out.print("	The flowrate in GPM \n 	The density of the fluid in kg/m^3 \n 	The viscosity of the fluid in cP at the operating temperature \n 	The inner diameter of the pipe");
+		switch (valve){
+			case "Gate Valve":
+				System.out.println("Is the Gate Valve halfway open or fully open?");
+				GateOpening = keyboard.nextLine();
+				
+				switch (GateOpening)
+				{
+					case "halfway open":
+						GateLoss = 4.5;
+						break;
+					case "fully open":
+						GateLoss = 0.17;
+						break;
+				}
+	
+				
+				//Display of required information
+				System.out.println("\nIn order to get started, you are going to need the following information:");
+				System.out.print("	The flowrate in GPM \n 	The density of the fluid in kg/m^3 \n 	The viscosity of the fluid in cP at the operating temperature \n 	The inner diameter of the pipe");
+				
+				//Request for User Data
+				System.out.println("\nEnter the flowrate in GPM: ");
+				flowrate = keyboard.nextDouble();
+				
+				System.out.println("Enter the inner diameter of the pipe in inches: ");
+				diameter = keyboard.nextDouble();
+				if (diameter < 0.2 || diameter > 0.8)
+				{
+					System.out.println("This diameter seems to be out of the expected range. Please make sure your units are in inches.");
+					System.out.println("Please enter the correct diameter in inches: ");
+					diameter = keyboard.nextDouble();
+				}
+				
+				System.out.println("Enter the fluid viscosity (in cP) at the operating temperature: ");
+				viscosity = keyboard.nextDouble();
+				
+				System.out.println("Enter the density of the fluid in kilograms per cubic meter: ");
+				density = keyboard.nextDouble();
+				
+				//Performing unit conversions from user input units to metric units 
+				double diameterSI = diameter*0.254;
+				double flowrateSI = flowrate*0.00378541/60;
+				double viscositySI = viscosity/1000;
+				
+				//Calculating the velocity inside of the pipe at the given flowrate and diameter
+				velocity= (4*flowrateSI)/(3.14*diameterSI*diameterSI);
+				System.out.printf("The velocity of water in a %.2f inch pipe at %.2f GPM is %.2f m/s",diameter,flowrate,velocity);
+				
+				//Calculating the Reynolds number 
+				ReynoldsNumber = (density*velocity*diameterSI)/viscositySI;
+				System.out.printf("\nThis gives a Reynolds number of %.2f.",ReynoldsNumber);
+				
+				//Deciding if the Reynolds Number is turbulent
+				{if (ReynoldsNumber > 1000)
+				
+					System.out.println("\nSince the Reynolds Number is above 1,000, the flow is turbulent");
+				else
+					System.out.println("\nThe flow is laminar. This is a suspect result and you should double check your input data.");
+				}
+				
+				//Calculating the friction factor
+				if (ReynoldsNumber > 30000)
+				{
+					ReynoldsNumberF = Math.pow(ReynoldsNumber,0.32);
+					FrictionFactor = 0.0014+(0.125/ReynoldsNumberF);
+				}
 		
-		//Request for User Data
-		System.out.println("\nEnter the flowrate in GPM: ");
-		flowrate = keyboard.nextDouble();
+				//Calculating Total Friction Loss				For all valves except the expansion valve, expansion and contraction terms are assumed to be 0. 
+				GVFL = (4*FrictionFactor*(3/diameterSI)*GateLoss)*((velocity*velocity)/2);
+				
+				
+				//Calculating Pressure Drop Across the Valve
+				PressureDrop = GVFL*density;						//Units need to be converted to PSI
+				System.out.printf("The theoretical pressure drop across the valve is %.2d psi",PressureDrop);
 		
-		System.out.println("Enter the inner diameter of the pipe in inches: ");
-		diameter = keyboard.nextDouble();
 		
-		System.out.println("Enter the fluid viscosity (in cP) at the operating temperature: ");
-		viscosity = keyboard.nextDouble();
 		
-		System.out.println("Enter the density of the fluid in kilograms per cubic meter: ");
-		density = keyboard.nextDouble();
-		
-		//Performing unit conversions from user input units to metric units 
-		double diameterSI = diameter*0.254;
-		double flowrateSI = flowrate*0.0378541/60;
-		double viscositySI = viscosity/1000;
-		
-		//Calculating the velocity inside of the pipe at the given flowrate and diameter
-		velocity= (4*flowrateSI)/(3.14*diameterSI*diameterSI);
-		System.out.printf("The velocity of water in a %.2f inch pipe at %.2f GPM is %.2f m/s",diameter,flowrate,velocity);
-		
-		//Calculating the Reynolds number 
-		ReynoldsNumber = (density*velocity*diameterSI)/viscositySI;
-		System.out.printf("\nThis gives a Reynolds number of %.2f.",ReynoldsNumber);
-		
-		//Deciding if the Reynolds Number is turbulent
-		{if (ReynoldsNumber > 10000)
-		
-			System.out.println("\nSince the Reynolds Number is above 10,000, the flow is turbulent");
-		else
-			System.out.println("\nThe flow is laminar. This is a suspect result and you should double check your input data.");
 		}
-		
-		//Calculating the friction factor
-		{if (Reynolds < 3000000)
-			FrictionFactor = 0.0014+(0.125/ReynoldsNumberF);
-			System.out.println("The friction factor is %f.",FrictionFactor);
-		else 
-			System.out.println("The Reynolds number is out of range for the equations in the current library.");
-		}
-		
-		
-		
-		
-		
-		
-		
 	}
 }
+	
